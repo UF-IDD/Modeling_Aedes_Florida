@@ -53,7 +53,7 @@ fit <- function(data, # dataset used to fit ZINB model
   
   if(species == 1){
     
-    m <- glmmTMB(Ae ~ log(abundance_aeg_1+1e-5) + log(abundance_aeg_2+1e-5) + log(abundance_aeg_3+1e-5) +
+    m <- glmmTMB(num_aeg ~ log(abundance_aeg_1+1e-5) + log(abundance_aeg_2+1e-5) + log(abundance_aeg_3+1e-5) +
                    log(abundance_alb_1+1e-5) + log(abundance_alb_2+1e-5) + log(abundance_alb_3+1e-5) + 
                    hum_pop_dens + # human population density
                    wind + tmin + delta_tmax + rh + # climatic variables
@@ -71,7 +71,7 @@ fit <- function(data, # dataset used to fit ZINB model
   
   if(species == 2){
     
-    m <- glmmTMB(Al ~ log(abundance_aeg_1+1e-5) + log(abundance_aeg_2+1e-5) + log(abundance_aeg_3+1e-5) +
+    m <- glmmTMB(num_alb ~ log(abundance_aeg_1+1e-5) + log(abundance_aeg_2+1e-5) + log(abundance_aeg_3+1e-5) +
                    log(abundance_alb_1+1e-5) + log(abundance_alb_2+1e-5) + log(abundance_alb_3+1e-5) + 
                    hum_pop_dens + # human population density
                    wind + tmin + delta_tmax + rh + # climatic variables
@@ -94,10 +94,10 @@ fit <- function(data, # dataset used to fit ZINB model
 
 data <- df[df$longitudinal_data==1, ] # subset longitudinal training dataset
 model <- fit(data, species) # change value of species accordingly
-pred.main <- glmmTMB::predict(model, 
-                              newdata = data, 
-                              type = "response", 
-                              allow.new.levels = TRUE) # retuen value of mu*(1-p); see predict.glmmTMB for more details
+pred.main <- predict(model, 
+                     newdata = data, 
+                     type = "response", 
+                     allow.new.levels = TRUE) # retuen value of mu*(1-p); see predict.glmmTMB for more details
 
 #
 # predict no abundance validation dataset
@@ -126,7 +126,7 @@ fitNoAbundance <- function(data, # dataset used to fit ZINB model
   
   if(species == 1){
     
-    m <- glmmTMB(Ae ~ hum_pop_dens + # human population density
+    m <- glmmTMB(num_aeg ~ hum_pop_dens + # human population density
                    wind + tmin + delta_tmax + rh + # climatic variables
                    light_trap + other_traps + # trap types
                    offset(trap_day) +
@@ -142,7 +142,7 @@ fitNoAbundance <- function(data, # dataset used to fit ZINB model
   
   if(species == 2){
     
-    m <- glmmTMB(Al ~ hum_pop_dens + # human population density
+    m <- glmmTMB(num_alb ~ hum_pop_dens + # human population density
                    wind + tmin + delta_tmax + rh + # climatic variables
                    light_trap + other_traps + # trap types
                    offset(trap_day) +
@@ -164,10 +164,10 @@ fitNoAbundance <- function(data, # dataset used to fit ZINB model
 ext <- df[df$external_data == 1, ] # subset no abundance validation dataset
 no_abund_model <- fitNoAbundance(data, species)
 
-pred.ext <- glmmTMB::predict(no_abund_model, 
-                             newdata = ext, 
-                             type = "response", 
-                             allow.new.levels = TRUE) # retuen value of mu*(1-p); see predict.glmmTMB for more details
+pred.ext <- predict(no_abund_model, 
+                    newdata = ext, 
+                    type = "response", 
+                    allow.new.levels = TRUE) # retuen value of mu*(1-p); see predict.glmmTMB for more details
 
 #
 # The end
